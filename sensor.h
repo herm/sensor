@@ -3,11 +3,14 @@
 
 #include "nrf24l01.h"
 
+//TODO: Write sensor info compiler
 struct sensor_info
 {
     uint8_t nr;
     uint8_t type;
     uint8_t size;
+    uint32_t min;
+    uint32_t max;
     char name[10];
 };
 
@@ -17,7 +20,8 @@ struct sensor_info_packet : public tiny_udp_packet
 };
 
 
-#define sinfo(nr, type, size, scale, name) {nr, type, ((size) | ((scale) << 4)), name}
+#define sinfo(nr, type, size, scale, name) {nr, type, ((size) | ((scale) << 4)), 0, 0, name}
+#define cinfo(nr, type, size, scale, min, max, name) {(nr+0x40), type, ((size) | ((scale) << 4)), min, max, name}
 
 extern const sensor_info info_messages[];
 
