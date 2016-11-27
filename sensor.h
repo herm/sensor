@@ -3,7 +3,6 @@
 
 #include "nrf24l01.h"
 
-//TODO: Write sensor info compiler
 struct sensor_info
 {
     uint8_t nr;
@@ -68,7 +67,7 @@ inline void send_sensor_info_P(const sensor_info *msg)
 {
     sensor_info_packet p;
     p.flags = 1;
-    p.size = sizeof(sensor_info);
+    p.set_payload_size(sizeof(sensor_info));
     memcpy_P(&p.info, msg, sizeof(sensor_info));
     send_udp_packet(p, server_ip, port_sensor_data);
 }
