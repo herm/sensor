@@ -2,6 +2,11 @@
 #define SENSOR_H
 
 #include "nrf24l01.h"
+#include "tinyudp.h"
+#include "utils.h"
+
+#define server_ip 1
+#define port_sensor_data 0
 
 struct sensor_info
 {
@@ -13,7 +18,7 @@ struct sensor_info
     char name[10];
 };
 
-struct sensor_info_packet : public tiny_udp_packet
+struct sensor_info_packet : public TinyUDP::Packet
 {
     sensor_info info;
 };
@@ -31,7 +36,12 @@ enum {
     st_fan = 8,
     st_voltage = 9,
     st_scanner = 10,
-    st_printer = 11
+    st_printer = 11,
+    st_current = 12,
+    st_power = 13,
+    st_energy = 14,
+    st_unixtime = 15,
+    st_seconds = 16,
 };
 
 // Sensor size (ss)
@@ -63,14 +73,18 @@ enum {
 #define cinfo(nr, type, size, scale, min, max, name) {(nr+0x40), type, ((size) | ((scale) << 4)), min, max, name}
 #define ginfo(num_sensors, num_controls, name) {0xff, num_sensors, num_controls, 0, 0, name}
 
-inline void send_sensor_info_P(const sensor_info *msg)
+static inline void send_sensor_info_P(const sensor_info *msg)
 {
     sensor_info_packet p;
     p.flags = 1;
     p.set_payload_size(sizeof(sensor_info));
     memcpy_P(&p.info, msg, sizeof(sensor_info));
-    send_udp_packet(p, server_ip, port_sensor_data);
+    TinyUDP::send(p, server_ip, port_sensor_data);
 }
 
+static inline void send_sensor_data(TinyUDP::Packet &packet)
+{
+    TinyUDP::send(packet, server_ip, port_sensor_data);
+}
 
 #endif // SENSOR_H
