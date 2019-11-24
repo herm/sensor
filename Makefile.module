@@ -1,1 +1,2 @@
-EXTRAINCDIRS += sensor
+SENSOR_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+EXTRAINCDIRS += $(SENSOR_DIR)
